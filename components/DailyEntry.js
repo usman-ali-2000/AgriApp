@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, ScrollView, FlatList, TouchableOpacity, Alert, Pressable, ActivityIndicator } from "react-native";
 import Inputform from "../items/Inputform";
 import Inputform2 from "../items/Inputform2";
+import { BaseUrl } from "../assets/Data";
 
 export default function DailyEntry({route, navigation}){
 
@@ -137,7 +138,7 @@ export default function DailyEntry({route, navigation}){
        ]
 
        const fetchDailyEntry= async()=>{
-        try{    const response = await fetch(`https://agri-api.vercel.app/dailyentry/${email}`);
+        try{    const response = await fetch(`${BaseUrl}/dailyentry`);
             const json = await response.json();
             setDailyentry(json);
             // console.log('json imp:', json);
@@ -153,14 +154,14 @@ export default function DailyEntry({route, navigation}){
 
 
     const fetchFarm =async()=>{
-        const response = await fetch(`https://agri-api.vercel.app/farm/${email}`);
+        const response = await fetch(`${BaseUrl}/farm`);
         const json = await response.json();
         setUserData(json);
         // console.log('farm:', userData);
     }
     
     const fetchPlot =async()=>{
-        const response = await fetch(`https://agri-api.vercel.app/plot/${email}`);
+        const response = await fetch(`${BaseUrl}/plot`);
         const json = await response.json();
         setPlotData(json);
         // console.log('farm:', userData);
@@ -168,7 +169,7 @@ export default function DailyEntry({route, navigation}){
 
     const fetchVehicle =async()=>{
 
-        const response = await fetch(`https://agri-api.vercel.app/vehicle/${email}`);
+        const response = await fetch(`${BaseUrl}/vehicle`);
         const json = await response.json();
         setVehicleInfo(json);
         // console.log('vehicle:', json);
@@ -221,7 +222,7 @@ const handleMoga =(text)=>{
     if(farm && plot && area && stage ){
         setLoading(true);
     const data = {id:length, farm: farm, plot: block+plot, area: area, stage: stage, type: subStage, deal: contract? 'contract':'self', time: duration? (durationPeriod):(start +' to '+ end), mean: contract?(null):(manpower?'Man Power':'tractor'), fuel: contract?(null):(manpower?null:diesel), person: contract?(null):(manpower?persons:null), quantity: qty, moga: moga, units: unit, email:email, date: date1};
-     const response = await fetch('https://agri-api.vercel.app/dailyentry', {
+     const response = await fetch(`${BaseUrl}/dailyentry`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

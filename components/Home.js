@@ -24,8 +24,8 @@ export default function Home({navigation, route}){
             <Text style={{width:'80%', fontSize:25,fontWeight:'700', color:theme.colors.blue}}>Select Options!</Text>
             <View style={{flexDirection:'row', width:'100%', justifyContent:'center', height:'35%', alignItems:'center'}}>
             <HomeItem text="Create" image={require('../assets/create.png')} onPress={handleCreate}/>
-            <HomeItem text="Daily-entry" image={require('../assets/daily-entry.png')}/>
-            <HomeItem text="Search" image={require('../assets/search.png')}/>
+            <HomeItem text="Daily-entry" image={require('../assets/daily-entry.png')} onPress={()=>navigation.navigate('DailyEntry',{email:email})}/>
+            <HomeItem text="Search" image={require('../assets/search.png')}  onPress={()=>navigation.navigate('Search',{email:email})}/>
             </View>
             </View>
             {/* <View style={{flexDirection:'row', width:'100%', justifyContent:'center', height:'20%', alignItems:'center'}}>

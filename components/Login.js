@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState, useRef } from "react";
 import { View, TextInput, Text, Alert, Pressable, Image } from "react-native";
 import theme from '../theme/GlobalTheme';
+import { BaseUrl } from "../assets/Data";
 
 export default function Login(){
 
@@ -21,7 +22,7 @@ export default function Login(){
 
     const fetchData=async()=>{
         try{
-          const response = await fetch('https://agri-api.vercel.app/login');
+          const response = await fetch(`${BaseUrl}/login`);
           const json = await response.json();
           console.log('json:', json); 
           setUserData(json);

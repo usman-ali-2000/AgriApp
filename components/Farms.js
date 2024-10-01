@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Pressable, Text, TextInput, View, ActivityIndicator, Alert } from "react-native";
+import { BaseUrl } from "../assets/Data";
 
 export default function Farms({route}){
 
@@ -25,12 +26,12 @@ export default function Farms({route}){
   
     const fetchData = async () => {
       try {
-        const response = await fetch('https://agri-api.vercel.app/farm');
+        const response = await fetch(`${BaseUrl}/farm`);
         const json = await response.json();
         console.log('json:', json);
         setUserData(json);
       } catch (error) {
-        console.log('error in fetching');
+        console.log('error in fetching...');
       }
     };
 
@@ -53,7 +54,7 @@ export default function Farms({route}){
       setModalVisible(true);
       console.log('submit', inputFarm);
       const data = { email, farm: inputFarm, date: date1 };
-      await fetch('https://agri-api.vercel.app/farm', {
+      await fetch(`${BaseUrl}/farm`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +83,7 @@ export default function Farms({route}){
         setDeleting(true);
         setInputFarm('');
 
-        await fetch('https://agri-api.vercel.app/farm', {
+        await fetch(`${BaseUrl}/farm`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
