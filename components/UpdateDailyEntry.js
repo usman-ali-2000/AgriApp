@@ -4,9 +4,9 @@ import Inputform from "../items/Inputform";
 import Inputform2 from "../items/Inputform2";
 import { BaseUrl } from "../assets/Data";
 
-export default function DailyEntry({ route, navigation }) {
+export default function UpdateDailyEntry({ route, navigation }) {
 
-    const email = route.params.email;
+    const data = route.params.data;
 
     const currentDate = new Date();
 
@@ -223,7 +223,7 @@ export default function DailyEntry({ route, navigation }) {
     const handleSubmit = async () => {
         if (farm && plot && area && stage) {
             setLoading(true);
-            const data = { id: length, farm: farm, plot: block + plot, area: area, stage: stage, type: subStage, deal: contract ? 'contract' : 'self', time: duration ? (durationPeriod) : (start + ' to ' + end), mean: contract ? (null) : (manpower ? 'Man Power' : 'tractor'), fuel: contract ? (null) : (manpower ? null : diesel), person: contract ? (null) : (manpower ? persons : null), quantity: qty, moga: moga, units: unit, email: email, date: date1 };
+            const data = { id: length, farm: farm, plot: block + plot, area: area, stage: stage, type: subStage, deal: contract ? 'contract' : 'self', time: duration ? (durationPeriod) : (start + ' to ' + end), mean: contract ? (null) : (manpower ? 'Man Power' : 'tractor'), fuel: contract ? (null) : (manpower ? null : diesel), person: contract ? (null) : (manpower ? persons : null), quantity: qty, moga: moga, units: unit, email: data?.email, date: date1 };
             const response = await fetch(`${BaseUrl}/dailyentry`, {
                 method: 'POST',
                 headers: {
@@ -1614,7 +1614,7 @@ export default function DailyEntry({ route, navigation }) {
                         }}>Save</Text>
                     </Pressable>
                     <Pressable style={{ paddingTop: 30, }}>
-                        <Text onPress={() => navigation.navigate('Search', { email: email })}
+                        <Text onPress={() => navigation.navigate('Search', { email: data.email })}
                             style={{
                                 height: 30,
                                 width: 80,
@@ -1667,4 +1667,4 @@ export default function DailyEntry({ route, navigation }) {
     )
 }
 
-React.memo(DailyEntry);
+React.memo(UpdateDailyEntry);

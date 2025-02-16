@@ -19,6 +19,7 @@ import Search from './components/Search';
 import theme from './theme/GlobalTheme';
 import Login from './components/Login';
 import Splash from './components/Splash';
+import UpdateDailyEntry from './components/UpdateDailyEntry';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +47,7 @@ const hello = () => {
           <Stack.Screen name="IrrigationSr" component={IrrigationSr} options={{title:"Irrigation Source"}}/>
           <Stack.Screen name="Job" component={Job}/>
           <Stack.Screen name="DailyEntry" component={DailyEntry}/>
+          <Stack.Screen name="UpdateDailyEntry" component={UpdateDailyEntry}/>
           <Stack.Screen name="Stages" component={Stages}/>
           <Stack.Screen name="Vehicle" component={Vehicle}/>
           <Stack.Screen name="Search"  component={Search}/>

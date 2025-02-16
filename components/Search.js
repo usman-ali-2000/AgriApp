@@ -1,26 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, TouchableOpacity } from "react-native";
 import InputText from "../items/InputText";
 import { BaseUrl } from "../assets/Data";
 import theme from "../theme/GlobalTheme";
 
-const Search = ({ route }) => {
+const Search = ({ route, navigation }) => {
+
     const email = route.params.email;
+
     const Api_Url = `${BaseUrl}/dailyentry`;
     const [dailyData, setDailyData] = useState([]);
     const [search, setSearch] = useState('');
     const [filteredData, setFilteredData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [farmData, setFarmData] = useState({}); // To store farm data
+    const [farmData, setFarmData] = useState({});
+    const [farms, setFarms] = useState([]);
+    const [lastTap, setLastTap] = useState(0);
 
     // Fetch daily entries
     const fetchDailyEntry = async () => {
         setLoading(true);
         try {
             const response = await fetch(Api_Url);
+            const response2 = await fetch(`${BaseUrl}/farm`);
             const json = await response.json();
+            const json2 = await response2.json();
             setDailyData(json);
             setFilteredData(json);
+            setFarms(json2);
         } catch (error) {
             console.error('Error fetching daily entries:', error);
         }
@@ -48,15 +55,29 @@ const Search = ({ route }) => {
     // Filter daily data based on search
     const handleFilter = (txt) => {
         const searchText = txt.toLowerCase();
-        const filtered = dailyData.filter((item) => 
-            item.farm.toLowerCase().includes(searchText) || 
-            item.stage.toLowerCase().includes(searchText) || 
+        const filtered = dailyData.filter((item) =>
+            item.stage.toLowerCase().includes(searchText) ||
             item.id.toString() === txt
         );
-        setFilteredData(filtered);
+        const matchingFarms = farms.filter((farm) =>
+            farm.farm.toLowerCase().includes(searchText)
+        );
+        const filteredByFarm = dailyData.filter((item) =>
+            matchingFarms.some((farm) => farm._id === item.farm)
+        );
+        const finalFilteredData = [...new Set([...filtered, ...filteredByFarm])];
+
+        setFilteredData(finalFilteredData);
     };
 
-    // Fetch farm data for all filtered items
+    const handleDoubleClick = (data) => {
+        const now = Date.now();
+        if (now - lastTap < 1000) {
+            navigation.navigate('UpdateDailyEntry', { data: data });
+        }
+        setLastTap(now);
+    };
+
     useEffect(() => {
         const fetchFarms = async () => {
             const farms = {};
@@ -109,7 +130,7 @@ const Search = ({ route }) => {
                                 <Text style={styles.heading}>Units</Text>
                             </View>
                             {filteredData.map((item) => (
-                                <View style={styles.column2} key={item.id}>
+                                <TouchableOpacity onPress={()=>{handleDoubleClick(item)}} style={styles.column2} key={item.id}>
                                     <Text style={styles.text}>{item.id}</Text>
                                     <Text style={styles.text}>{farmData[item.farm] || 'Loading...'}</Text>
                                     <Text style={styles.text}>{item.plot}</Text>
@@ -125,7 +146,7 @@ const Search = ({ route }) => {
                                     <Text style={styles.text}>{item.quantity}</Text>
                                     <Text style={styles.text}>{item.moga}</Text>
                                     <Text style={styles.text}>{item.units}</Text>
-                                </View>
+                                </TouchableOpacity>
                             ))}
                         </View>
                     </ScrollView>
@@ -170,7 +191,7 @@ const styles = StyleSheet.create({
         color: theme.colors.white,
         padding: 5,
         width: 100,
-        textAlign:'center'
+        textAlign: 'center'
     },
     text: {
         fontSize: 16,
@@ -178,7 +199,7 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         width: 100,
         padding: 5,
-        borderWidth:1/2,
-        textAlign:'center'
+        borderWidth: 1 / 2,
+        textAlign: 'center'
     },
 });

@@ -14,11 +14,12 @@ export default function Login(){
     const name = 'usmanzulfiqar14@gmail.com';
     const password = 'usman12345'
 
-    const [inputText, setInputText] = useState('');
-    const [inputPass, setInputPass] = useState('');
+    const [inputText, setInputText] = useState(name);
+    const [inputPass, setInputPass] = useState(password);
     const [idcheck, setIdCheck] = useState(false);
     const [userData, setUserData] = useState([]);
     const [passCheck, setPassCheck] = useState('');
+
 
     const fetchData=async()=>{
         try{
