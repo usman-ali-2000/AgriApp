@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, TouchableOpacity } from "react-native";
 import InputText from "../items/InputText";
 import { BaseUrl } from "../assets/Data";
 import theme from "../theme/GlobalTheme";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Search = ({ route, navigation }) => {
 
@@ -96,6 +97,12 @@ const Search = ({ route, navigation }) => {
     useEffect(() => {
         fetchDailyEntry();
     }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchDailyEntry(); 
+        }, [])
+    );
 
     return (
         <View style={styles.container}>

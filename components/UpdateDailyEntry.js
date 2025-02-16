@@ -16,48 +16,47 @@ export default function UpdateDailyEntry({ route, navigation }) {
 
     const formattedDate = `${day}/${month}/${year}`;
 
-
-    const [farm, setFarm] = useState(null);
+    const [farm, setFarm] = useState(data.farm);
     const [farmName, setFarmName] = useState('');
     const [openFarm, setOpenFarm] = useState(false);
     const [userData, setUserData] = useState([]);
-    const [block, setBlock] = useState(null);
-    const [plot, setPlot] = useState(null);
+    const [block, setBlock] = useState('');
+    const [plot, setPlot] = useState(data.plot);
     const [plotData, setPlotData] = useState([]);
     const [openPlot, setOpenPlot] = useState(false);
-    const [area, setArea] = useState(null);
+    const [area, setArea] = useState(data.area);
     const [vehicleInfo, setVehicleInfo] = useState([]);
     const [openStage, setOpenStage] = useState(false);
     const [fuel, setFuel] = useState(0);
-    const [stage, setStage] = useState(null);
-    const [subStage, setSubStage] = useState(null);
+    const [stage, setStage] = useState(data.stage);
+    const [subStage, setSubStage] = useState(data.type);
     const [openSubStage, setOpenSubStage] = useState(null);
     const [contract, setContract] = useState(false);
     const [self, setSelf] = useState(true);
-    const [date1, setDate1] = useState(null);
+    const [date1, setDate1] = useState(data.date);
     const [length, setLength] = useState(0);
     const [duration, setDuration] = useState(false);
     const [durationPeriod, setDurationPeriod] = useState(null);
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(0);
-    const [diesel, setDiesel] = useState(null);
-    const [subFertilizer, setSubFertilizer] = useState(null);
+    const [diesel, setDiesel] = useState(data.fuel);
+    const [subFertilizer, setSubFertilizer] = useState(data.type);
     const [openSubFertilizer, setOpenSubFertilizer] = useState(null);
     const [manpower, setManPower] = useState(false);
     const [persons, setPersons] = useState(0);
     const [sowingType, setSowingType] = useState(null);
-    const [subWeedicides, setSubWeedicides] = useState(null);
+    const [subWeedicides, setSubWeedicides] = useState(data.type);
     const [openSubWeedicides, setOpenSubWeedicides] = useState(false);
-    const [qty, setQty] = useState(null);
-    const [subIrrigation, setSubIrrigation] = useState(null);
+    const [qty, setQty] = useState(data.quantity);
+    const [subIrrigation, setSubIrrigation] = useState(data.type);
     const [openSubIrrigation, setOpenSubIrrigation] = useState(false);
-    const [subPesticides, setSubPesticides] = useState(null);
+    const [subPesticides, setSubPesticides] = useState(data.type);
     const [openSubPesticides, setOpenSubPesticides] = useState(false);
-    const [unit, setUnit] = useState(null);
-    const [moga, setMoga] = useState(null);
+    const [unit, setUnit] = useState(data.units);
+    const [moga, setMoga] = useState(data.moga);
     const [deleting, setDeleting] = useState(false);
     const [updating, setUpdating] = useState(false);
-    const [subsowing, setSubSowing] = useState(null);
+    const [subsowing, setSubSowing] = useState(data.type);
     const [openSubSowing, setOpenSubSowing] = useState(false);
     const [dailyentry, setDailyentry] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -158,8 +157,10 @@ export default function UpdateDailyEntry({ route, navigation }) {
     const fetchFarm = async () => {
         const response = await fetch(`${BaseUrl}/farm`);
         const json = await response.json();
+        const farmname = await json.find((item) => (item._id === data.farm));
+        setFarmName(farmname.farm);
         setUserData(json);
-        // console.log('farm:', userData);
+        console.log('farm:', json, farmname);
     }
 
     const fetchPlot = async () => {
@@ -219,36 +220,62 @@ export default function UpdateDailyEntry({ route, navigation }) {
         setEnd(text);
     }
 
-
     const handleSubmit = async () => {
-        if (farm && plot && area && stage) {
-            setLoading(true);
-            const data = { id: length, farm: farm, plot: block + plot, area: area, stage: stage, type: subStage, deal: contract ? 'contract' : 'self', time: duration ? (durationPeriod) : (start + ' to ' + end), mean: contract ? (null) : (manpower ? 'Man Power' : 'tractor'), fuel: contract ? (null) : (manpower ? null : diesel), person: contract ? (null) : (manpower ? persons : null), quantity: qty, moga: moga, units: unit, email: data?.email, date: date1 };
-            const response = await fetch(`${BaseUrl}/dailyentry`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-
-            });
-            if (response.ok) {
-                Alert.alert('Uploaded...');
-            } else {
-                Alert.alert('error uploading...');
-            }
-        } else {
-            setLoading(false);
-            Alert.alert('required fields are empty');
+        console.log("ID:", data?._id);
+    
+        // Check if required fields are missing
+        if (!farm || !plot || !area || !stage) {
+            Alert.alert("Required fields are empty");
+            return; // Stop execution here
         }
-        setLoading(false);
-        setFarm(null);
-        setPlot(0);
-        setArea();
-        setBlock();
-        setStage();
-        fetchDailyEntry();
-    }
+    
+        setLoading(true);
+    
+        try {
+            // Construct data payload
+            const payload = {
+                id: length,
+                farm: farm,
+                plot: block + plot,
+                area: area,
+                stage: stage,
+                type: subStage,
+                deal: contract ? "contract" : "self",
+                time: duration ? durationPeriod : `${start} to ${end}`,
+                mean: contract ? null : manpower ? "Man Power" : "Tractor",
+                fuel: contract ? null : manpower ? null : diesel,
+                person: contract ? null : manpower ? persons : null,
+                quantity: qty,
+                moga: moga,
+                units: unit,
+                email: data?.email,
+                date: date1,
+            };
+    
+            // API Request
+            const response = await fetch(`${BaseUrl}/dailyentry/${data?._id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            // Handle Response
+            if (response.ok) {
+                Alert.alert("Updated Successfully!");
+                fetchDailyEntry(); // Fetch new data only on success
+            } else {
+                Alert.alert("Error updating data.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            Alert.alert("Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    };
+    
 
 
 
@@ -565,6 +592,30 @@ export default function UpdateDailyEntry({ route, navigation }) {
         fetchDailyEntry();
         setDate1(formattedDate);
         // console.log('email:', email);
+        if (data.deal === 'self') {
+            setSelf(true);
+            setContract(false);
+        } else if (data.deal === 'contract') {
+            setContract(true);
+            setSelf(false);
+        }
+        if (data?.time?.includes('to')) {
+            setDuration(false);
+            const [start, end] = data.time.split(" to ");
+            setStart(start.trim());
+            setEnd(end.trim());
+        } else {
+            setDuration(true);
+            setDurationPeriod(data.time);
+        }
+
+        if (data.mean === 'tractor') {
+            setManPower(false);
+            setDiesel(data.fuel);
+        } else {
+            setManPower(true);
+            setPersons(data.person);
+        }
     }, [length]);
 
     return (
